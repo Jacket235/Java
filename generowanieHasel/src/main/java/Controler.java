@@ -1,69 +1,84 @@
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.FileWriter;
 
 public class Controler {
     @FXML
-    TextField TFIlosc;
+    TextField TFQuantity;
     @FXML
-    ComboBox<String>  CBZnak;
+    ComboBox<String> CBSymbol;
     @FXML
-    ComboBox<String> CBDlugosc;
-    @FXML
-    Button BGeneruj;
+    ComboBox<String> CBLength;
     @FXML
     void initialize (){
-        CBZnak.getItems().add("!");
-        CBZnak.getItems().add("@");
-        CBZnak.getItems().add("#");
-        CBZnak.getItems().add("$");
-        CBZnak.getItems().add("%");
-        CBZnak.getItems().add("*");
-        CBZnak.getItems().add("&");
-        CBZnak.getItems().add("(");
-        CBZnak.getItems().add(")");
-        CBDlugosc.getItems().add("10");
-        CBDlugosc.getItems().add("12");
+        CBSymbol.getItems().add("!");
+        CBSymbol.getItems().add("@");
+        CBSymbol.getItems().add("#");
+        CBSymbol.getItems().add("$");
+        CBSymbol.getItems().add("%");
+        CBSymbol.getItems().add("*");
+        CBSymbol.getItems().add("&");
+        CBSymbol.getItems().add("(");
+        CBSymbol.getItems().add(")");
+
+        CBLength.getItems().add("10");
+        CBLength.getItems().add("12");
+
+        TFQuantity.setTextFormatter(new TextFormatter<Object>(c -> {
+            if(c.getControlNewText().matches("^\\d*$")){
+                return c;
+            }
+            return null;
+        }));
     }
     public void getInfoAndCreatePasswords(){
         Program program = new Program();
-        int passAmount = 0;
-        int selectedLength = 0;
-        String specialSymbol = CBZnak.getValue();
-        FileWriter fw = null;
+        FileWriter fw;
+        FileChooser fileChooser;
+        String filepath;
+        String specialSymbol = CBSymbol.getValue();
+        int passAmount;
+        int selectedLength;
 
         try {
-            passAmount = Integer.parseInt(TFIlosc.getText());
-            selectedLength = Integer.parseInt(CBDlugosc.getValue());
-            if(selectedLength == 10 && CBZnak.getValue() != null){
-                program.readFileAndAddToArrayList("haslaLiter10.txt", specialSymbol);
-            } else if (selectedLength == 12 && selectedLength != 0 && CBZnak.getValue() != null){
-                program.readFileAndAddToArrayList("haslaLiter12.txt", specialSymbol);
+            passAmount = Integer.parseInt(TFQuantity.getText());
+            selectedLength = Integer.parseInt(CBLength.getValue());
+            if(selectedLength == 10 && CBSymbol.getValue() != null){
+                program.readFileAndAddToArrayList("10letterPasswords.txt", specialSymbol);
+            } else if (selectedLength == 12 && CBSymbol.getValue() != null){
+                program.readFileAndAddToArrayList("12letterPasswords.txt", specialSymbol);
             }
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Where to save the file");
+
+            fileChooser = new FileChooser();
+            fileChooser.setTitle("Select a file where you want the passwords to save.");
             File file = fileChooser.showOpenDialog(Main.stage);
-            String filepath = "";
             if(file != null){
                 filepath = file.toString();
                 fw = new FileWriter(filepath);
                 for (int i = 0; i < passAmount; i++){
-                    fw.write(program.haslaArrayList.get((int)(Math.random() * (program.haslaArrayList.size()  + 1))));
+                    int rnd = (int)(Math.random() * program.passwordArrayList.size());
+                    fw.write(program.passwordArrayList.get(rnd));
+                    program.passwordArrayList.remove(rnd);
                     fw.write("\n");
                 }
                 fw.close();
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("Success");
+                alert.setContentText("The passwords have successfully saved to the file " + filepath);
+
+                alert.showAndWait();
             }
         }
         catch (Exception e){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Error");
-            alert.setContentText("Make sure you put in the correct data and filled the whole form in.");
+            alert.setContentText("Incorrect data/Unfilled form, or you're trying to generate too many passwords!");
 
             alert.showAndWait();
         }

@@ -5,17 +5,16 @@ import java.io.IOException;
 import java.time.Clock;
 import java.time.Year;
 import java.util.ArrayList;
-// slowo rok znak_specjalny  // ile hasel, roznych z pliku // pierwszy znak duzy, reszta male // combo box i hasla 10 lub 12 literowe
 
 public class Program {
-    ArrayList<String> haslaArrayList = new ArrayList<>();
+    ArrayList<String> passwordArrayList = new ArrayList<>();
 
     void readFileAndAddToArrayList(String pathname, String specialSymbol){
         FileReader fr = null;
-        String linia = "";
+        String line = "";
         Year rok = Year.now(Clock.systemUTC());
 
-        // OTWIERANIE PLIKU:
+        // OPENING THE FILE
         try {
             fr = new FileReader(pathname);
         } catch (FileNotFoundException e) {
@@ -25,24 +24,24 @@ public class Program {
         }
 
         BufferedReader bfr = new BufferedReader(fr);
-        // ODCZYT KOLEJNYCH LINII Z PLIKU:
+        // READING THE FILE AND MODIFYING THE CONTENTS
         try {
-            while((linia = bfr.readLine()) != null){
-                haslaArrayList.add(linia);
+            while((line = bfr.readLine()) != null){
+                passwordArrayList.add(line);
             }
-            for (int i = 0; i < haslaArrayList.size(); i++){
+            for (int i = 0; i < passwordArrayList.size(); i++){
                 String word;
-                word = haslaArrayList.get(i);
+                word = passwordArrayList.get(i);
                 String firstLetter = word.substring(0, 1);
                 String restOfWord = word.substring(1);
-                haslaArrayList.set(i, firstLetter.toUpperCase() + restOfWord.toLowerCase() + rok + specialSymbol);
+                passwordArrayList.set(i, firstLetter.toUpperCase() + restOfWord.toLowerCase() + rok + specialSymbol);
             }
         } catch (IOException e) {
             System.out.println("ERROR READING FILE!");
             System.exit(2);
         }
 
-        // ZAMYKANIE PLIKU
+        // CLOSING THE FILE
         try {
             fr.close();
         } catch (IOException e) {
@@ -51,11 +50,11 @@ public class Program {
         }
     }
 
-    public void setHaslaArrayList(ArrayList<String> haslaArrayList) {
-        this.haslaArrayList = haslaArrayList;
+    public void setPasswordArrayList(ArrayList<String> haslaArrayList) {
+        this.passwordArrayList = haslaArrayList;
     }
 
-    public ArrayList<String> getHaslaArrayList() {
-        return haslaArrayList;
+    public ArrayList<String> getPasswordArrayList() {
+        return passwordArrayList;
     }
 }

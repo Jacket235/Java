@@ -10,7 +10,7 @@ public class Main extends Application {
     public static Stage stage;
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader myLoader = new FXMLLoader();
-        myLoader.setLocation(this.getClass().getResource("okno.fxml"));
+        myLoader.setLocation(this.getClass().getResource("view.fxml"));
         Parent root = myLoader.load();
 
         primaryStage.setScene(new Scene(root));
